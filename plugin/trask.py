@@ -3,15 +3,21 @@
 import os, sys
 import json
 import random
+import sqlite3
 
 from argparse import ArgumentParser
 
 class Sentinel:
   def __init__(self, id=None, name=None):
-    self.id = hex(random.getrandbits(42*8))[2:]
-    self.name = '{0}, {1} {2} sentinel'.format(self.__color(),
-                                               self.__adjective(),
-                                               self.__generation())
+    if id is None:
+      id = hex(random.getrandbits(42*8))[2:]
+    if name is None:
+      name = '{0}, {1} {2} sentinel'.format(self.__color(),
+                                            self.__adjective(),
+                                            self.__generation())
+
+    self.id = id
+    self.name = name
 
   def __eq__(self, other):
     return (self.id == other.id) or (self.name == other.name)
@@ -103,20 +109,67 @@ class Command:
     else:
       return ''
 
+class MasterMold:
+  def __init__(self):
+    db = 'master_mold.db'
+    initialize = False
+    if not os.path.isfile(db):
+      initialize = True
+
+    self._connection = sqlite3.connect(db, isolation_level=None)
+    self.cursor = self._connection.cursor()
+
+    if initialize:
+      self.initialize()
+
+  def initialize(self):
+    self.cursor.execute("""\
+CREATE TABLE sentinels
+(
+  id TEXT NOT NULL,
+  name TEXT NOT NULL,
+  PRIMARY KEY ( id, name )
+)
+""")
+
+  def add_sentinel(self, sentinel):
+    self.cursor.execute('INSERT INTO sentinels (id, name) '
+                        'VALUES (?, ?)',
+                        (sentinel.id, sentinel.name))
+
+  def get_sentinels(self, n=None):
+    i = 0
+    sentinels = []
+    for row in self.cursor.execute('SELECT id, name from sentinels'):
+      if (n is not None) and (i == n):
+        break
+
+      sentinels.append(Sentinel(row[0], row[1]))
+      i += 1
+
+    return sentinels
+
 class Trask:
   def __init__(self, n):
-    self.sentinels = []
-    for i in range(n):
-      sentinel = Sentinel()
-      while sentinel in self.sentinels:
+    self.n = n
+    self.master_mold = MasterMold()
+    sentinels = self.master_mold.get_sentinels()
+
+    m = n - len(sentinels)
+    if m > 0:
+      for i in range(m):
         sentinel = Sentinel()
-      self.sentinels.append(sentinel)
+        while sentinel in sentinels:
+          sentinel = Sentinel()
+
+        sentinels.append(sentinel)
+        self.master_mold.add_sentinel(sentinel)
 
   def process_commands(self, location):
     for cf in os.listdir(location):
       command = Command(os.path.join(location, cf))
       if command.requires_result:
-        for sentinel in self.sentinels:
+        for sentinel in self.master_mold.get_sentinels(self.n):
           if sentinel.is_applicable(command):
             sentinel.process_command(command)
 
