@@ -1,0 +1,11 @@
+{
+  "ID": "trask",
+  "ExecutablePath": "python \"C:\\Program Files (x86)\\BigFix Enterprise\\Management Extender\\Plugins\\trask\\plugin\\trask.py\"",
+  "ConfigurationOptions": "",
+  "TargetHintRelevance": "",
+  "CommandFormat": "JSON",
+  "DeviceReportRefreshIntervalMinutes": 1,
+  "DeviceReportExpirationIntervalHours": 168,
+  "SendSettingsToPlugin": [],
+  "HandlePartialRefresh": true
+}
