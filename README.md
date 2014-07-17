@@ -5,6 +5,7 @@ An IBM Endpoint Manager Proxy Agent plugin to simulate clients
 # Features
 - Generate device reports
   - Computer name
+  - Operating system
 
 # Usage
 ## Prerequisites

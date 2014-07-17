@@ -5,6 +5,7 @@ import json
 import random
 import sqlite3
 
+from version import __version__
 from argparse import ArgumentParser
 
 class Sentinel:
@@ -56,7 +57,9 @@ class Sentinel:
       'refresh': {'output': '{0}.report'.format(self.id),
                   'result':  {'device id': self.id,
                               'data source': 'trask',
-                              'computer name': self.name}},
+                              'computer name': self.name,
+                              'operating system': {'name': 'trask',
+                                                   'version': __version__}}},
       0:         {'output': '{0}.json'.format(command.get('commandid')),
                   'result': {'CommandID': command.get('commandid'),
                              'DeviceID': self.id,
@@ -190,6 +193,7 @@ Options:
   --configOptions OPTIONS  config options
   --commandDir LOCATION    command directory location
 
+  --version                print program version and exit
   -h, --help               print this help text and exit
   """.format(description)
 
@@ -201,9 +205,14 @@ Options:
   argparser.add_argument('--commandDir', required=True)
 
   argparser.add_argument('-h', '--help')
+  argparser.add_argument('--version')
 
   if '-h' in sys.argv or '--help' in sys.argv:
     print(usage)
+    sys.exit()
+
+  if '--version' in sys.argv:
+    print(__version__)
     sys.exit()
 
   args = argparser.parse_args()
