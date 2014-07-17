@@ -114,7 +114,7 @@ class MasterMold:
   def __init__(self, db=None):
     if db is None:
       db = 'master_mold.db'
-    
+
     self._connection = sqlite3.connect(db, isolation_level=None)
     self.cursor = self._connection.cursor()
 
@@ -148,12 +148,19 @@ CREATE TABLE IF NOT EXISTS sentinels
     return sentinels
 
 class Trask:
-  def __init__(self, n):
+  def __init__(self, n, master_mold=None):
+    if master_mold is None:
+      master_mold = MasterMold()
+
     self.n = n
-    self.master_mold = MasterMold()
+    self.master_mold = master_mold
+
+    self.activate()
+
+  def activate(self):
     sentinels = self.master_mold.get_sentinels()
 
-    m = n - len(sentinels)
+    m = self.n - len(sentinels)
     if m > 0:
       for i in range(m):
         sentinel = Sentinel()
