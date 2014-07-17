@@ -67,9 +67,9 @@ class Sentinel:
     if command.get('commandname') not in process:
       name = 0
 
-    loc = os.path.join(command.get('outputdirectory'),
+    result = os.path.join(command.get('outputdirectory'),
                        process[name]['output'])
-    with open(loc, 'w') as f:
+    with open(result, 'w') as f:
       json.dump(process[name]['result'], f, ensure_ascii=False)
 
     if name == 0:
@@ -80,6 +80,7 @@ class Command:
     self.location = location
     with open(location, 'r') as f:
       self.__command = json.load(f, object_hook=Command.__json_lower)
+    self.requires_result = False
     self.__validate()
 
   @staticmethod
