@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
-import os, sys
-import random
+import os, sys, tempfile
 import sqlite3
 import unittest
 
@@ -13,10 +12,7 @@ from trask import Sentinel
 
 class MasterMold(MM):
   def __init__(self):
-    db = '{0}.db'.format(hex(random.getrandbits(42*8))[2:])
-    while os.path.isfile(db):
-      db = '{0}.db'.format(hex(random.getrandbits(42*8))[2:])
-    super(MasterMold, self).__init__(db)
+    super(MasterMold, self).__init__(tempfile.mkstemp()[1])
 
 class TestDatabase(unittest.TestCase):
   def test_init(self):

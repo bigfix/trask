@@ -1,8 +1,6 @@
 #!/usr/bin/python
 
 import os, sys
-import json
-import random
 import unittest
 
 from test.util import write_command

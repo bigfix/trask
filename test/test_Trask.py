@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
-import os, sys, shutil, tempfile
-import random
+import os, sys, tempfile
 import unittest
 
 from test.util import write_command
@@ -14,10 +13,7 @@ from trask import Trask as T
 
 class MasterMold(MM):
   def __init__(self):
-    db = '{0}.db'.format(hex(random.getrandbits(42*8))[2:])
-    while os.path.isfile(db):
-      db = '{0}.db'.format(hex(random.getrandbits(42*8))[2:])
-    super(MasterMold, self).__init__(db)
+    super(MasterMold, self).__init__(tempfile.mkstemp()[1])
 
 class Trask(T):
   def __init__(self, n):
@@ -35,16 +31,15 @@ class TestRun(unittest.TestCase):
     os.mkdir(dr)
     os.mkdir(pr)
     cf = write_command(output_directory=dr,
-                       command_name='refresh')
-    rf = os.path.join(pr, 'RefreshAll.command')
-    os.rename(cf, rf)
+                       command_name='refresh',
+                       directory=pr)
 
     n = 42
     trask = Trask(n)
     trask.process_commands(pr)
 
     self.assertEqual(len(os.listdir(dr)), n)
-    self.assertTrue(os.path.isfile(rf))
+    self.assertTrue(os.path.isfile(cf))
 
 if __name__ == '__main__':
   unittest.main()
