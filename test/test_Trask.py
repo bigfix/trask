@@ -1,13 +1,14 @@
 #!/usr/bin/python
 
-import os, sys, tempfile
+import os, sys, tempfile, subprocess
 import unittest
 
 from test.util import write_command
 
-sys.path.insert(0, os.path.join(
+trask_path = os.path.join(
                      os.path.dirname(
-                       os.path.dirname(os.path.abspath(__file__))), 'plugin'))
+                       os.path.dirname(os.path.abspath(__file__))), 'plugin')
+sys.path.insert(0, trask_path)
 from trask import MasterMold as MM
 from trask import Trask as T
 
@@ -40,6 +41,23 @@ class TestRun(unittest.TestCase):
 
     self.assertEqual(len(os.listdir(dr)), n)
     self.assertTrue(os.path.isfile(cf))
+
+class TestExecution(unittest.TestCase):
+  def __run(self, args):
+    try:
+      subprocess.check_call(args, cwd=trask_path, stdout=subprocess.DEVNULL)
+    except subprocess.CalledProcessError as e:
+      self.fail('Failed with return code ({0})'.format(e.returncode))
+
+  def test_import(self):
+    self.__run([sys.executable, '-c', 'import trask'])
+
+  def test_version(self):
+    self.__run([sys.executable, '-m', 'trask', '--version'])
+
+  def test_help(self):
+    self.__run([sys.executable, '-m', 'trask', '--help'])
+    self.__run([sys.executable, '-m', 'trask', '-h'])
 
 if __name__ == '__main__':
   unittest.main()
