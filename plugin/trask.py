@@ -111,21 +111,18 @@ class Command:
       return ''
 
 class MasterMold:
-  def __init__(self):
-    db = 'master_mold.db'
-    initialize = False
-    if not os.path.isfile(db):
-      initialize = True
-
+  def __init__(self, db=None):
+    if db is None:
+      db = 'master_mold.db'
+    
     self._connection = sqlite3.connect(db, isolation_level=None)
     self.cursor = self._connection.cursor()
 
-    if initialize:
-      self.initialize()
+    self.initialize()
 
   def initialize(self):
     self.cursor.execute("""\
-CREATE TABLE sentinels
+CREATE TABLE IF NOT EXISTS sentinels
 (
   id TEXT NOT NULL,
   name TEXT NOT NULL,
