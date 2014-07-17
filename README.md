@@ -6,7 +6,7 @@ An IBM Endpoint Manager Proxy Agent plugin to simulate clients
 
 # Usage
 ## Prerequisites
-- [python-3.3](https://www.python.org/downloads/)
+- [python-3.x](https://www.python.org/downloads/)
 
 ## Environment
 - Windows Server
