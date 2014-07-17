@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/bigfix/trask.svg?branch=master)](https://travis-ci.org/bigfix/trask)
+
 An IBM Endpoint Manager Proxy Agent plugin to simulate clients
 
 # Features
