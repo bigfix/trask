@@ -36,7 +36,7 @@ class Sentinel:
                   'acclaimed', 'accomplished', 'accurate', 'aching', 'acidic', 
                   'acrobatic', 'active', 'actual', 'adept', 'admirable', 
                   'admired', 'adolescent', 'adorable', 'advanced', 
-                  'adventurous', 'affectionate', 'afraid']
+                  'adventurous', 'affectionate', 'afraid', 'beautiful']
     return adjectives[random.randint(0,len(adjectives)-1)]
 
   def __generation(self):
