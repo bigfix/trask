@@ -84,7 +84,7 @@ class Sentinel:
     colors = ['aqua', 'black', 'blue', 'fuchsia', 'gray', 'green', 'lime', 
               'maroon', 'navy', 'navy', 'olive', 'orange', 'purple', 'red',
               'silver', 'teal', 'white', 'yellow']
-    return colors[random.randint(0,len(colors)-1)]
+    return random.choice(colors)
 
   def __adjective(self):
     adjectives = ['abandoned', 'able', 'absolute', 'academic', 'acceptable', 
@@ -92,13 +92,13 @@ class Sentinel:
                   'acrobatic', 'active', 'actual', 'adept', 'admirable', 
                   'admired', 'adolescent', 'adorable', 'advanced', 
                   'adventurous', 'affectionate', 'afraid', 'beautiful']
-    return adjectives[random.randint(0,len(adjectives)-1)]
+    return random.choice(adjectives)
 
   def __generation(self):
     generations = ['mark ii', 'composite', 'mark iii', 'mark iv', 'mark v', 
                    'mark vi', 'mark vii', 'nimrod', 'prime', 'omega prime',
                    'wild', 'mark viii', 'bio']
-    return generations[random.randint(0,len(generations)-1)]
+    return random.choice(generations)
 
   def is_applicable(self, command):
     if command.exists('targetdevice'):
