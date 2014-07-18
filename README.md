@@ -22,7 +22,7 @@ Tested on `bolivar` a Windows Server 2012 environment:
 
 On `bolivar`:
 
-```
+```bash
 $ net stop BESProxyAgent
 $ cd {Management Extender root folder}
 $ mkdir Plugins
@@ -60,15 +60,15 @@ For example, this configuration file, `sentinel.json` has two equal likelihood c
 ## Tests
 To run the tests, run any of the following (or execute a test file directly):
 
-```
+```bash
 $ python -m unittest discover
 ```
 
-```
+```bash
 $ python test/test_Sentinel.py
 ```
 
-```
+```bash
 $ nosetests
 ```
 
