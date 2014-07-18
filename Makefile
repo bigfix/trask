@@ -9,4 +9,5 @@ test:
 	vagrant ssh --command \
 	  "temp=$(mktemp --directory) && \
 	   rsync -r /vagrant/* $temp --exclude='.*' && \
-	   cd $temp && nosetests"
+	   cd $temp && \
+	   nosetests"

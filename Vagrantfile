@@ -15,9 +15,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     v.customize ["modifyvm", :id, "--cpus", 1]
 
   $script = <<SCRIPT
-touch ~/.bash_aliases && \
-echo "alias python=python3" > ~/.bash_aliases && \
-source ~/.bash_aliases
+touch /home/vagrant/.bash_aliases && \
+echo "alias python=python3" > /home/vagrant/.bash_aliases
 
 sudo apt-get update && sudo apt-get install --yes python3-pip
 

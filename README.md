@@ -73,10 +73,16 @@ $ python test/test_Sentinel.py
 $ nosetests
 ```
 
-Tests can also be built using the `Makefile` and `vagrant`. To run tests in this way, run the following:
+Tests can also be built using `vagrant`. To run tests in this way, run the following:
 
+### Linux & Mac
 ```bash
 $ make test
+```
+
+### Windows
+```bat
+> make.bat test
 ```
 
 # Support
