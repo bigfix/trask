@@ -43,8 +43,10 @@ class Config:
 
   def __add_defaults(self):
     self.__config['operating system'] = [{"value": {"name": "trask", 
-                                                   "version": __version__}, 
+                                                    "version": __version__}, 
                                          "weight": 1}]
+    self.__config['in proxy agent context'] = [{"value": False, 
+                                                "weight": 1}]
 
   def choose(self):
     self.values = {}
