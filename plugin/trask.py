@@ -8,17 +8,71 @@ import sqlite3
 from version import __version__
 from argparse import ArgumentParser
 
+class Config:
+  def __init__(self, location=None, values=None):
+    self.__config = {}
+    self.__add_defaults()
+
+    self.is_valid = False
+    self.values = values
+
+    if location is not None:
+      with open(location, 'r') as f:
+        self.__config = json.load(f)
+        self.is_valid = self.__validate()
+
+  def __validate(self):
+    for attribute in self.__config:
+      if type(self.__config[attribute]) is not list:
+        return False
+
+      if attribute in ['device id', 'data source', 'computer name']:
+        return False
+
+      for i, choice in enumerate(self.__config[attribute]):
+        if type(choice) is not dict:
+          return False
+
+        if 'value' not in choice:
+          return False
+
+        if 'weight' not in choice:
+          self.__config[attribute][i]['weight'] = 1
+
+    return True
+
+  def __add_defaults(self):
+    self.__config['operating system'] = [{"value": {"name": "trask", 
+                                                   "version": __version__}, 
+                                         "weight": 1}]
+
+  def choose(self):
+    self.values = {}
+
+    for attribute in self.__config:
+      weighted_choices = []
+      for i, choice in enumerate(self.__config[attribute]):
+        weighted_choices.append((i, choice['weight']))
+      choices = [v for v, c in weighted_choices for j in range(c)]
+      self.values[attribute] = \
+        self.__config[attribute][random.choice(choices)]['value']
+
 class Sentinel:
-  def __init__(self, id=None, name=None):
+  def __init__(self, id=None, name=None, config=None):
     if id is None:
       id = hex(random.getrandbits(42*8))[2:]
     if name is None:
       name = '{0}, {1} {2} sentinel'.format(self.__color(),
                                             self.__adjective(),
                                             self.__generation())
+    if config is None:
+      config = Config()
 
     self.id = id
     self.name = name
+    self.config = config
+    if self.config.values is None:
+      self.config.choose()
 
   def __eq__(self, other):
     return (self.id == other.id) or (self.name == other.name)
@@ -52,18 +106,24 @@ class Sentinel:
     else:
       return command.get('commandname') == 'refresh'
 
+  def _process_refresh(self, command):
+    result = {"device id": self.id,
+              "data source": "trask",
+              "computer name": self.name}
+    return dict(self.config.values, **result)
+
+  def _process_command(self, command):
+    result = {"CommandID": command.get('commandid'),
+              "DeviceID": self.id,
+              "Result": "Completed"}
+    return result
+
   def process_command(self, command):
     process = {
       'refresh': {'output': '{0}.report'.format(self.id),
-                  'result':  {'device id': self.id,
-                              'data source': 'trask',
-                              'computer name': self.name,
-                              'operating system': {'name': 'trask',
-                                                   'version': __version__}}},
+                  'result':  self._process_refresh},
       0:         {'output': '{0}.json'.format(command.get('commandid')),
-                  'result': {'CommandID': command.get('commandid'),
-                             'DeviceID': self.id,
-                             'Result': 'Completed'}}
+                  'result': self._process_command}
     }
 
     name = command.get('commandname')
@@ -71,9 +131,9 @@ class Sentinel:
       name = 0
 
     result = os.path.join(command.get('outputdirectory'),
-                       process[name]['output'])
+                          process[name]['output'])
     with open(result, 'w') as f:
-      json.dump(process[name]['result'], f, ensure_ascii=False)
+      json.dump(process[name]['result'](command), f, ensure_ascii=False)
 
     if name == 0:
       os.remove(command.location)
@@ -129,34 +189,40 @@ CREATE TABLE IF NOT EXISTS sentinels
 (
   id TEXT NOT NULL,
   name TEXT NOT NULL,
+  config_values TEXT NOT NULL,
   PRIMARY KEY ( id, name )
 )
 """)
 
   def add_sentinel(self, sentinel):
-    self.cursor.execute('INSERT INTO sentinels (id, name) '
-                        'VALUES (?, ?)',
-                        (sentinel.id, sentinel.name))
+    config_values = json.dumps(sentinel.config.values, separators=(',', ':'))
+    self.cursor.execute('INSERT INTO sentinels (id, name, config_values) '
+                        'VALUES (?, ?, ?)',
+                        (sentinel.id, sentinel.name, config_values))
 
   def get_sentinels(self, n=None):
     i = 0
     sentinels = []
-    for row in self.cursor.execute('SELECT id, name from sentinels'):
+    for row in self.cursor.execute('SELECT id, name, config_values '
+                                   'FROM sentinels'):
       if (n is not None) and (i == n):
         break
 
-      sentinels.append(Sentinel(row[0], row[1]))
+      sentinels.append(Sentinel(row[0], 
+                                row[1], 
+                                Config(values=json.loads(row[2]))))
       i += 1
 
     return sentinels
 
 class Trask:
-  def __init__(self, n, master_mold=None):
+  def __init__(self, n, master_mold=None, config=None):
     if master_mold is None:
       master_mold = MasterMold()
 
     self.n = n
     self.master_mold = master_mold
+    self.config = config
 
     self.activate()
 
@@ -166,9 +232,9 @@ class Trask:
     m = self.n - len(sentinels)
     if m > 0:
       for i in range(m):
-        sentinel = Sentinel()
+        sentinel = Sentinel(config=self.config)
         while sentinel in sentinels:
-          sentinel = Sentinel()
+          sentinel = Sentinel(config=self.config)
 
         sentinels.append(sentinel)
         self.master_mold.add_sentinel(sentinel)
@@ -190,11 +256,14 @@ An IBM Endpoint Manager Proxy Agent plugin to simulate clients"""
 {0}
 
 Options:
-  --configOptions OPTIONS  config options
-  --commandDir LOCATION    command directory location
+  --configOptions        config options (ignored)
+  --commandDir LOCATION  command directory location
 
-  --version                print program version and exit
-  -h, --help               print this help text and exit
+  --config LOCATION      sentinel configuration file location
+  --validate LOCATION    validates sentinel configuration file and exit
+
+  --version              print program version and exit
+  -h, --help             print this help text and exit
   """.format(description)
 
   argparser = ArgumentParser(description=description,
@@ -202,7 +271,10 @@ Options:
                              add_help=False)
 
   argparser.add_argument('--configOptions')
-  argparser.add_argument('--commandDir', required=True)
+  argparser.add_argument('--commandDir')
+
+  argparser.add_argument('--config')
+  argparser.add_argument('--validate')
 
   argparser.add_argument('-h', '--help')
   argparser.add_argument('--version')
@@ -217,12 +289,28 @@ Options:
 
   args = argparser.parse_args()
 
+  if args.validate:
+    valid = 'in'
+    if os.path.isfile(args.validate):
+      if Config(args.validate).is_valid:
+        valid = ''
+    print('"{0}" is {1}valid.'.format(args.validate, valid))
+    sys.exit()
+
+  if args.commandDir is None:
+    print("""\
+{0}
+
+trask.py: error: --commandDir is required
+""".format(usage))
+    sys.exit(1)
+
   return args
 
 def main():
   args = parse_args()
   
-  trask = Trask(42)
+  trask = Trask(42, config=Config(args.config))
   trask.process_commands(args.commandDir)
 
 if __name__ == '__main__':
