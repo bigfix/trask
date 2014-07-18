@@ -35,10 +35,10 @@ $ net start BESProxyAgent
 
 ## Configure
 ### Device reports
-Device reports can be configured via the ``--config`` option. This option takes a JSON file with the following specifications:
+Device reports can be configured via the ``--config`` option. To utilize this option, the `settings.json` must be edited to include the option in the `ExecutablePath`. The `--config` option takes a JSON file with the following specifications:
 - keys correlate to device report attributes (ex: `operating system`).
-- values must be a list of choice objects.
-  - choice objects have a mandatory key, `value`, and optional key, `weight`. By default, the `weight` is 1.
+- values must be a list of choice objects
+.  - choice objects have a mandatory key, `value`, and optional key, `weight`. By default, the `weight` is 1.
 
 For example, this configuration file, `sentinel.json` has two equal likelihood choices for the `operating system` attribute:
 
