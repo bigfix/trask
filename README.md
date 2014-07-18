@@ -56,6 +56,7 @@ For example, this configuration file, `sentinel.json` has two equal likelihood c
 # Develop
 ## Prerequisites
 - [nose](https://nose.readthedocs.org/en/latest/)
+- [vagrant](http://www.vagrantup.com/downloads.html)
 
 ## Tests
 To run the tests, run any of the following (or execute a test file directly):
@@ -70,6 +71,12 @@ $ python test/test_Sentinel.py
 
 ```bash
 $ nosetests
+```
+
+Tests can also be built using the `Makefile` and `vagrant`. To run tests in this way, run the following:
+
+```bash
+$ make test
 ```
 
 # Support

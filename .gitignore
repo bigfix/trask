@@ -7,3 +7,5 @@ DeviceReports/
 PendingCommands/
 PendingRefreshes/
 LastScanTime.json
+
+/.vagrant
