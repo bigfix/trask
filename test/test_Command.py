@@ -23,9 +23,9 @@ class TestRead(unittest.TestCase):
     self.assertTrue(command.requires_result)
 
     command = Command(write_command(output_directory='C:\\bolivar',
-                       command_name='capture',
-                       target_device='moira',
-                       command_id='14'))
+                                    command_name='capture',
+                                    target_device='moira',
+                                    command_id='14'))
     self.assertIsInstance(command, Command)
     self.assertTrue(command.requires_result)
 
