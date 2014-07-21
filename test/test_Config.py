@@ -5,10 +5,8 @@ import unittest
 
 from test.util import write_config
 
-sys.path.insert(0, os.path.join(
-                     os.path.dirname(
-                       os.path.dirname(os.path.abspath(__file__))), 'plugin'))
-from trask import Config
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from trask.Config import Config
 
 class TestWriteConfig(unittest.TestCase):
   def test_write(self):

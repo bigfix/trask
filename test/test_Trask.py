@@ -5,12 +5,10 @@ import unittest
 
 from test.util import write_command
 
-trask_path = os.path.join(
-                     os.path.dirname(
-                       os.path.dirname(os.path.abspath(__file__))), 'plugin')
+trask_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, trask_path)
-from trask import MasterMold as MM
-from trask import Trask as T
+from trask.MasterMold import MasterMold as MM
+from trask.Trask import Trask as T
 
 class MasterMold(MM):
   def __init__(self):
@@ -42,7 +40,7 @@ class TestRun(unittest.TestCase):
     self.assertEqual(len(os.listdir(dr)), n)
     self.assertTrue(os.path.isfile(cf))
 
-class TestExecution(unittest.TestCase):
+class TestModule(unittest.TestCase):
   def __run(self, args):
     try:
       subprocess.check_call(args, cwd=trask_path, stdout=subprocess.DEVNULL)
@@ -50,7 +48,20 @@ class TestExecution(unittest.TestCase):
       self.fail('Failed with return code ({0})'.format(e.returncode))
 
   def test_import(self):
-    self.__run([sys.executable, '-c', 'import trask'])
+    self.__run([sys.executable, '-c', 'from trask.Command import *'])
+    self.__run([sys.executable, '-c', 'from trask.Config import *'])
+    self.__run([sys.executable, '-c', 'from trask.MasterMold import *'])
+    self.__run([sys.executable, '-c', 'from trask.Sentinel import *'])
+    self.__run([sys.executable, '-c', 'from trask.Trask import *'])
+    self.__run([sys.executable, '-c', 'from trask.version import *'])
+
+class TestExecution(unittest.TestCase):
+  def __run(self, args):
+    try:
+      subprocess.check_call(args, cwd=os.path.join(trask_path, 'plugin'), 
+                            stdout=subprocess.DEVNULL)
+    except subprocess.CalledProcessError as e:
+      self.fail('Failed with return code ({0})'.format(e.returncode))
 
   def test_version(self):
     self.__run([sys.executable, '-m', 'trask', '--version'])

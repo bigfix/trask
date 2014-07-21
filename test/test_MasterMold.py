@@ -4,11 +4,9 @@ import os, sys, tempfile
 import sqlite3
 import unittest
 
-sys.path.insert(0, os.path.join(
-                     os.path.dirname(
-                       os.path.dirname(os.path.abspath(__file__))), 'plugin'))
-from trask import MasterMold as MM
-from trask import Sentinel
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from trask.MasterMold import MasterMold as MM
+from trask.Sentinel import Sentinel
 
 class MasterMold(MM):
   def __init__(self):

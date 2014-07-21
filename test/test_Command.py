@@ -5,10 +5,8 @@ import unittest
 
 from test.util import write_command
 
-sys.path.insert(0, os.path.join(
-                     os.path.dirname(
-                       os.path.dirname(os.path.abspath(__file__))), 'plugin'))
-from trask import Command
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from trask.Command import Command
 
 class TestWriteCommand(unittest.TestCase):
   def test_write(self):

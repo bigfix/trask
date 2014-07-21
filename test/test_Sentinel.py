@@ -3,10 +3,8 @@
 import os, sys
 import unittest
 
-sys.path.insert(0, os.path.join(
-                     os.path.dirname(
-                       os.path.dirname(os.path.abspath(__file__))), 'plugin'))
-from trask import Sentinel
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from trask.Sentinel import Sentinel
 
 class TestEqual(unittest.TestCase):
   def test_eq(self):
