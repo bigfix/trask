@@ -71,7 +71,7 @@ class Sentinel:
   def process_command(self, command):
     process = {
       'refresh': {'output': '{0}.report'.format(self.id),
-                  'result':  self._process_refresh},
+                  'result': self._process_refresh},
       0:         {'output': '{0}.json'.format(command.get('commandid')),
                   'result': self._process_command}
     }
