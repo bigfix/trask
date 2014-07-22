@@ -31,16 +31,16 @@ $ git clone git@github.com:bigfix/trask.git
 $ net start BESProxyAgent
 ```
 
-`{Management Extender root folder}` by default is `C:\Program Files (x86)\BigFix Enterprise\Management Extender`. Adjust the `settings.json` if your Proxy Agent was installed elsewhere.
+`{Management Extender root folder}` by default is `C:\Program Files (x86)\BigFix Enterprise\Management Extender`. Adjust the [`settings.json`](settings.json) if your Proxy Agent was installed elsewhere.
 
 ## Configure
 ### Device reports
-Device reports can be configured via the ``--config`` option. To utilize this option, the `settings.json` must be edited to include the option in the `ExecutablePath`. The `--config` option takes a JSON file with the following specifications:
+Device reports can be configured via the ``--config`` option. To utilize this option, the [`settings.json`](settings.json) must be edited to include the option in the `ExecutablePath`. The `--config` option takes a JSON file with the following specifications:
 - keys correlate to device report attributes (ex: `operating system`).
 - values must be a list of choice objects
 .  - choice objects have a mandatory key, `value`, and optional key, `weight`. By default, the `weight` is 1.
 
-For example, this configuration file, `sentinel.json` has two equal likelihood choices for the `operating system` attribute:
+For example, this configuration file, [`sentinel.json`](sentinel.json) has two equal likelihood choices for the `operating system` attribute:
 
 ```json
 {
