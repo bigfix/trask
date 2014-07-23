@@ -93,5 +93,5 @@ class Sentinel:
     with open(result, 'w') as f:
       json.dump(process[name]['result'](command), f, ensure_ascii=False)
 
-    # if name == 0:
-    #   os.remove(command.location)
+    if name == 0:
+      os.remove(command.location)
