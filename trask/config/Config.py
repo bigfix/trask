@@ -16,7 +16,7 @@ class Config:
 
     if location is not None:
       with open(location, 'r') as f:
-        self._config = json.load(f)
+        self._config.update(json.load(f))
         self.is_valid = self.__validate()
 
   def __validate(self):
@@ -41,7 +41,6 @@ class Config:
 
   def choose(self):
     self.values = {}
-
     for parameter in self._config:
       weighted_choices = []
       for i, choice in enumerate(self._config[parameter]):

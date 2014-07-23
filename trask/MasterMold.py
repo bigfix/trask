@@ -5,6 +5,7 @@ import sqlite3
 
 from .Sentinel import Sentinel
 from .config.DeviceConfig import DeviceConfig
+from .config.ResultConfig import ResultConfig
 
 class MasterMold:
   def __init__(self, db=None):
@@ -34,7 +35,7 @@ CREATE TABLE IF NOT EXISTS sentinels
                         'VALUES (?, ?, ?)',
                         (sentinel.id, sentinel.name, config_values))
 
-  def get_sentinels(self, n=None):
+  def get_sentinels(self, n=None, result_config=None):
     i = 0
     sentinels = []
     for row in self.cursor.execute('SELECT id, name, config_values '
@@ -44,7 +45,8 @@ CREATE TABLE IF NOT EXISTS sentinels
 
       sentinels.append(Sentinel(row[0], 
                                 row[1], 
-                                DeviceConfig(values=json.loads(row[2]))))
+                                DeviceConfig(values=json.loads(row[2])),
+                                result_config))
       i += 1
 
     return sentinels

@@ -5,10 +5,15 @@ import json
 import random
 
 from .config.DeviceConfig import DeviceConfig
+from .config.ResultConfig import ResultConfig
 from .Command import Command
 
 class Sentinel:
-  def __init__(self, id=None, name=None, device_config=None):
+  def __init__(self, 
+               id=None, 
+               name=None, 
+               device_config=None, 
+               result_config=None):
     if id is None:
       id = hex(random.getrandbits(42*8))[2:]
     if name is None:
@@ -17,12 +22,15 @@ class Sentinel:
                                             self.__generation())
     if device_config is None:
       device_config = DeviceConfig()
+    if result_config is None:
+      result_config = ResultConfig()
 
     self.id = id
     self.name = name
     self.device_config = device_config
     if self.device_config.values is None:
       self.device_config.choose()
+    self.result_config = result_config
 
   def __eq__(self, other):
     return (self.id == other.id) or (self.name == other.name)
@@ -63,9 +71,9 @@ class Sentinel:
     return dict(self.device_config.values, **result)
 
   def _process_command(self, command):
-    result = {"CommandID": command.get('commandid'),
-              "DeviceID": self.id,
-              "Result": "Completed"}
+    result = [{"CommandID": command.get('commandid'),
+               "DeviceID": self.id,
+               "Result": self.result_config.get(command.get('commandname'))}]
     return result
 
   def process_command(self, command):
@@ -85,5 +93,5 @@ class Sentinel:
     with open(result, 'w') as f:
       json.dump(process[name]['result'](command), f, ensure_ascii=False)
 
-    if name == 0:
-      os.remove(command.location)
+    # if name == 0:
+    #   os.remove(command.location)

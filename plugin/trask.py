@@ -6,6 +6,7 @@ from argparse import ArgumentParser
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from trask.config.DeviceConfig import DeviceConfig
+from trask.config.ResultConfig import ResultConfig
 from trask.Trask import Trask
 from trask.version import __version__
 
@@ -22,8 +23,9 @@ Options:
   --commandDir LOCATION     command directory location
 
   --device-config LOCATION  sentinel configuration file location
+  --result-config LOCATION  command result configuration file location
   --validate                validates configuration file and exit
-                            (must specify "--device-config")
+                            (must specify "--device-config" or "result-config")
 
   --version                 print program version and exit
   -h, --help                print this help text and exit
@@ -46,6 +48,7 @@ trask.py: error: {1}
   argparser.add_argument('--commandDir')
 
   argparser.add_argument('--device-config')
+  argparser.add_argument('--result-config')
   argparser.add_argument('--validate', action='store_true')
 
   argparser.add_argument('-h', '--help')
@@ -62,14 +65,24 @@ trask.py: error: {1}
   args = argparser.parse_args()
 
   if args.validate:
-    if not args.device_config:
-      error_with_usage('must specify "--device-config"')
+    if (args.device_config and args.result_config) or \
+       not args.device_config or \
+       not args.result_config:
+      error_with_usage('must specify "--device-config" or "result-config"')
 
     valid = 'in'
-    if os.path.isfile(args.device_config):
-      if DeviceConfig(args.device_config).is_valid:
-        valid = ''
-    print('"{0}" is {1}valid.'.format(args.device_config, valid))
+    config = None
+    if args.device_config:
+      config = args.device_config
+      if os.path.isfile(config) and DeviceConfig(config).is_valid:
+          valid = ''
+
+    if args.result_config:
+      config = args.result_config
+      if os.path.isfile(config) and ResultConfig(config).is_valid:
+          valid = ''
+
+    print('"{0}" is {1}valid.'.format(config, valid))
     sys.exit()
 
   if args.commandDir is None:
@@ -80,7 +93,9 @@ trask.py: error: {1}
 def main():
   args = parse_args()
   
-  trask = Trask(42, device_config=DeviceConfig(args.device_config))
+  trask = Trask(42, 
+                device_config=DeviceConfig(args.device_config), 
+                result_config=ResultConfig(args.result_config))
   trask.process_commands(args.commandDir)
 
 if __name__ == '__main__':

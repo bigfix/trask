@@ -35,7 +35,7 @@ $ net start BESProxyAgent
 
 ## Configure
 ### Device reports
-Device reports can be configured via the ``--device-config`` option. To utilize this option, the [`settings.json`](settings.json) must be edited to include the option in the `ExecutablePath`. The `--device-config` option takes a JSON file with the following specifications:
+Device reports can be configured via the `--device-config` option. To utilize this option, the [`settings.json`](settings.json) must be edited to include the option in the `ExecutablePath`. The `--device-config` option takes a JSON file with the following specifications:
 - keys correlate to device report attributes (ex: `operating system`).
 - values must be a list of choice objects
 .  - choice objects have a mandatory key, `value`, and optional key, `weight`. By default, the `weight` is 1.
@@ -50,6 +50,28 @@ For example, this configuration file, [`sentinel.json`](sentinel.json) has two e
                        {"value": {"name": "moira kinross", 
                                   "version": "1975.12.10"}, 
                         "weight": 1}]
+}
+```
+
+### Command results
+Command results can be configured via the `--result-config` option. Like the configuration for device reports, the [`settings.json`](settings.json) must be edited to include the option in the `ExecutablePath`. This configuration also takes a JSON file with the following specifications:
+- keys correlate to commands (ex: `locate`).
+- values must be a list of choice objects
+.  - choice objects have a mandatory key, `value`, and optional key, `weight`. By default, the `weight` is 1. The value must either be "Completed", "Failed", or "Error".
+
+For example, this configuration file, [`result.json`](result.json) has two equal likelihood choices for the `locate` command and one result for any other commands:
+
+```json
+{
+  "locate": [{"value": "Completed", 
+              "weight": 1},
+             {"value": "Failed",
+              "weight": 1},
+             {"value": "Error",
+              "weight": 1}],
+
+  "default": [{"value": "Completed",
+               "weight": 1}]
 }
 ```
 

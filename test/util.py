@@ -32,13 +32,32 @@ def write_device_config(operating_system=None,
   def __write(key, attribute):
     nonlocal config
     if attribute is not None:
-      config[key] = [{"value": attribute,
+      config[key] = [{"value": [attribute],
                       "weight": 1}]
 
   __write('operating system', operating_system)
   __write('device id', device_id)
   __write('data source', data_source)
   __write('computer name', computer_name)
+
+  cf = tempfile.mkstemp()[1]
+  with open(cf, 'w') as f:
+    json.dump(config, f, ensure_ascii=False)
+  return cf
+
+def write_result_config(locate=None,
+                        default=None,
+                        refresh=None):
+  config = {}
+  def __write(key, command):
+    nonlocal config
+    if command is not None:
+      config[key] = [{"value": [command],
+                      "weight": 1}]
+
+  __write('locate', locate)
+  __write('default', default)
+  __write('refresh', refresh)
 
   cf = tempfile.mkstemp()[1]
   with open(cf, 'w') as f:
