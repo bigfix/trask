@@ -25,20 +25,44 @@ class TestRun(unittest.TestCase):
 
   def test_refresh(self):
     temp = tempfile.mkdtemp()
-    dr = os.path.abspath(os.path.join(temp, 'DeviceReports'))
-    pr = os.path.abspath(os.path.join(temp, 'PendingRefreshes'))
-    os.mkdir(dr)
-    os.mkdir(pr)
-    cf = write_command(output_directory=dr,
+    result = os.path.abspath(os.path.join(temp, 'DeviceReports'))
+    pending = os.path.abspath(os.path.join(temp, 'PendingRefreshes'))
+    os.mkdir(result)
+    os.mkdir(pending)
+    cf = write_command(output_directory=result,
                        command_name='refresh',
-                       directory=pr)
+                       directory=pending)
 
     n = 42
     trask = Trask(n)
-    trask.process_commands(pr)
+    trask.process_commands(pending)
 
-    self.assertEqual(len(os.listdir(dr)), n)
+    self.assertEqual(len(os.listdir(result)), n)
     self.assertTrue(os.path.isfile(cf))
+
+  def test_locate(self):
+    temp = tempfile.mkdtemp()
+    result = os.path.abspath(os.path.join(temp, 'ActionResultsFiles'))
+    pending = os.path.abspath(os.path.join(temp, 'PendingCommands'))
+    os.mkdir(result)
+    os.mkdir(pending)
+    n = 42
+    trask = Trask(n)
+
+    cfs = []
+    sentinels = trask.master_mold.get_sentinels()
+    for i, sentinel in enumerate(sentinels):
+      cfs.append(write_command(output_directory=result,
+                               command_name='locate',
+                               target_device=sentinel.id,
+                               command_id='3141592653-{0}'.format(i),
+                               directory=pending))
+
+    trask.process_commands(pending)
+    self.assertEqual(len(os.listdir(result)), n)
+
+    for cf in cfs:
+      self.assertFalse(os.path.isfile(cf))
 
 class TestModule(unittest.TestCase):
   def __run(self, args):
