@@ -4,17 +4,17 @@ import os
 
 from .MasterMold import MasterMold
 from .Sentinel import Sentinel
-from .Config import Config
+from .config.DeviceConfig import DeviceConfig
 from .Command import Command
 
 class Trask:
-  def __init__(self, n, master_mold=None, config=None):
+  def __init__(self, n, master_mold=None, device_config=None):
     if master_mold is None:
       master_mold = MasterMold()
 
     self.n = n
     self.master_mold = master_mold
-    self.config = config
+    self.device_config = device_config
 
     self.activate()
 
@@ -24,9 +24,9 @@ class Trask:
     m = self.n - len(sentinels)
     if m > 0:
       for i in range(m):
-        sentinel = Sentinel(config=self.config)
+        sentinel = Sentinel(device_config=self.device_config)
         while sentinel in sentinels:
-          sentinel = Sentinel(config=self.config)
+          sentinel = Sentinel(device_config=self.device_config)
 
         sentinels.append(sentinel)
         self.master_mold.add_sentinel(sentinel)

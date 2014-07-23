@@ -49,7 +49,9 @@ class TestModule(unittest.TestCase):
 
   def test_import(self):
     self.__run([sys.executable, '-c', 'from trask.Command import *'])
-    self.__run([sys.executable, '-c', 'from trask.Config import *'])
+    self.__run([sys.executable, '-c', 'from trask.config.Config import *'])
+    self.__run([sys.executable, '-c', 
+                'from trask.config.DeviceConfig import *'])
     self.__run([sys.executable, '-c', 'from trask.MasterMold import *'])
     self.__run([sys.executable, '-c', 'from trask.Sentinel import *'])
     self.__run([sys.executable, '-c', 'from trask.Trask import *'])

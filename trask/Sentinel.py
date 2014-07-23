@@ -4,25 +4,25 @@ import os
 import json
 import random
 
-from .Config import Config
+from .config.DeviceConfig import DeviceConfig
 from .Command import Command
 
 class Sentinel:
-  def __init__(self, id=None, name=None, config=None):
+  def __init__(self, id=None, name=None, device_config=None):
     if id is None:
       id = hex(random.getrandbits(42*8))[2:]
     if name is None:
       name = '{0}, {1} {2} sentinel'.format(self.__color(),
                                             self.__adjective(),
                                             self.__generation())
-    if config is None:
-      config = Config()
+    if device_config is None:
+      device_config = DeviceConfig()
 
     self.id = id
     self.name = name
-    self.config = config
-    if self.config.values is None:
-      self.config.choose()
+    self.device_config = device_config
+    if self.device_config.values is None:
+      self.device_config.choose()
 
   def __eq__(self, other):
     return (self.id == other.id) or (self.name == other.name)
@@ -60,7 +60,7 @@ class Sentinel:
     result = {"device id": self.id,
               "data source": "trask",
               "computer name": self.name}
-    return dict(self.config.values, **result)
+    return dict(self.device_config.values, **result)
 
   def _process_command(self, command):
     result = {"CommandID": command.get('commandid'),

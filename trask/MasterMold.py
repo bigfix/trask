@@ -4,7 +4,7 @@ import json
 import sqlite3
 
 from .Sentinel import Sentinel
-from .Config import Config
+from .config.DeviceConfig import DeviceConfig
 
 class MasterMold:
   def __init__(self, db=None):
@@ -28,7 +28,8 @@ CREATE TABLE IF NOT EXISTS sentinels
 """)
 
   def add_sentinel(self, sentinel):
-    config_values = json.dumps(sentinel.config.values, separators=(',', ':'))
+    config_values = json.dumps(sentinel.device_config.values, 
+                               separators=(',', ':'))
     self.cursor.execute('INSERT INTO sentinels (id, name, config_values) '
                         'VALUES (?, ?, ?)',
                         (sentinel.id, sentinel.name, config_values))
@@ -43,7 +44,7 @@ CREATE TABLE IF NOT EXISTS sentinels
 
       sentinels.append(Sentinel(row[0], 
                                 row[1], 
-                                Config(values=json.loads(row[2]))))
+                                DeviceConfig(values=json.loads(row[2]))))
       i += 1
 
     return sentinels

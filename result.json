@@ -1,0 +1,10 @@
+{
+  "locate": [{"value": "Completed", 
+              "weight": 1},
+             {"value": "Failed",
+              "weight": 1},
+             {"value": "Error",
+              "weight": 1}],
+  "default": [{"value": "Completed",
+               "weight": 1}]
+}

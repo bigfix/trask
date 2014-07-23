@@ -24,10 +24,10 @@ def write_command(output_directory=None,
     json.dump(command, f, ensure_ascii=False)
   return cf
 
-def write_config(operating_system=None,
-                 device_id=None,
-                 data_source=None,
-                 computer_name=None):
+def write_device_config(operating_system=None,
+                        device_id=None,
+                        data_source=None,
+                        computer_name=None):
   config = {}
   def __write(key, attribute):
     nonlocal config
