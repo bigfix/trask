@@ -11,6 +11,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     v.gui = false
     v.customize ["modifyvm", :id, "--memory", 512]
     v.customize ["modifyvm", :id, "--cpus", 1]
+  end
 
   $script = <<SCRIPT
 touch /home/vagrant/.bash_aliases && \
@@ -22,5 +23,4 @@ sudo pip3 install nose
 SCRIPT
 
   config.vm.provision "shell", inline: $script
-  end
 end
