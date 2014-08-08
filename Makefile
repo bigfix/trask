@@ -7,7 +7,7 @@ clean:
 test: 
 	vagrant up && \
 	vagrant ssh --command \
-	  "temp=$(mktemp --directory) && \
-	   rsync -r /vagrant/* $temp --exclude='.*' && \
-	   cd $temp && \
+	  "temp=$$(mktemp --directory) && \
+	   rsync -r /vagrant/* $$temp --exclude='.*' && \
+	   cd $$temp && \
 	   nosetests"
